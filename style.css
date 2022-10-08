@@ -1,0 +1,172 @@
+/* Before jump */
+/* animation-timing-function: cubic-bezier(0.33333, 0.66667, 0.66667, 1)  */
+/* While jumping */
+/* animation-timing-function: cubic-bezier(0.33333, 0, 0.66667, 0.33333)  */
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+/* Configs */
+:root{
+    --game-speed: 0; /* 5000 In ms*/
+    --jump-speed: 0; /* 600 In ms*/
+    --max-jump: 0; /* 250 In percentage*/
+    --speed-scale: 0; /* 1 */
+} 
+
+*{
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    font-family: 'VT323', monospace;
+}
+
+html {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* Game container */
+#game{
+    position: relative;
+    border: 1px solid black;
+    overflow: hidden;
+}
+
+.score{
+    position: absolute;
+    right: 0;
+    color: #535353;
+    font-size: xxx-large;
+}
+
+.messages {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    font-size: xx-large;
+    color: #535353;
+}
+
+.messages p {
+    display: none;
+}
+
+.messages p:first-child{
+    display: block;
+}
+
+/* After the game starts */
+/* Seems like instead of using JavaScript to turn on and off the game state, we're using extremely
+    detailed CSS rules to make control how the game works */
+.game-started .messages p:first-child{
+    display: none;
+}
+
+.game-over .messages p:last-child{
+    display: block;
+}
+
+.ground{
+    position: absolute;
+    bottom: 0;
+    background-image: url(./dino-game-assets/images/ground.png);
+    background-repeat: repeat-x;
+    image-rendering: pixelated;
+    width: 7197px; /* original is 2399px. 3x of 2399 is 7197. We extend this so 
+    that when it extends slightly before looping back to the start, the break in pattern
+    can't be noticed */
+    height:24px;
+    /* if we use var(--game-speed) only, it won't work because the unit is undefined */
+    /* instead we add on a calc function to help us multiply the variable with 1 unit of whichever unit we want */
+    /* e.g. instead of 5000, now it's 5000 * 1ms = 5000ms */
+}
+
+.game-started .ground{
+    animation: ground-animation calc(var(--game-speed) * 1ms) linear infinite;
+}
+
+.game-over .ground{
+    animation-play-state: paused;
+}
+
+@keyframes ground-animation{ /* This one determines the start and end point of the animation*/
+    0%{
+        left: 0;
+    }
+    100%{
+        left: -2399px; 
+    }
+}
+
+.dino {
+    position: absolute;
+    bottom: 0;
+    left: 1%;
+    background-image: url(./dino-game-assets/images/dino/dino_initial.png);
+    background-repeat: no-repeat;
+    image-rendering:pixelated;
+    width: 88px;
+    height: 94px;
+}
+
+.dino.jump {
+    animation: dino-jump-animation calc(var(--jump-speed) * 1ms) linear;
+}
+
+@keyframes dino-jump-animation{
+    0%{
+        transform: translate3d(0,0,0);
+        /* Before jump. This is to give it a trampoline-like bouncing effect instead of just moving an image up and down */
+        animation-timing-function: cubic-bezier(0.33333, 0.66667, 0.66667, 1)  
+        
+    }
+    50%{
+        transform: translate3d(0,calc(var(--max-jump) * -1%),0); /* We wnat to jump up, not down. Down by default is positive, so up is negative*/
+        /* -250% vertical change */
+        
+        /* While jumping */
+        animation-timing-function: cubic-bezier(0.33333, 0, 0.66667, 0.33333) 
+    }
+    100%{
+        transform: translate3d(0,0,0);
+    }
+}
+.cactus{
+    position: absolute;
+    bottom: 0;
+    left: 2000px;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+}
+
+.cactus-small-1{
+    background-image: url(dino-game-assets/images/cacti/cacti_small_1.png);
+    height: 70px;
+    width: 34px;
+}
+
+.cactus-small-2{
+    background-image: url(dino-game-assets/images/cacti/cacti_small_2.png);
+    height: 70px;
+    width: 68;
+}
+
+.cactus-small-3{
+    background-image: url(dino-game-assets/images/cacti/cacti_small_3.png);
+    height: 70px;
+    width: 102px;
+}
+
+.footer{
+    position: fixed;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+}
+
